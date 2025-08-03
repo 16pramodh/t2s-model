@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: fastapi-sql-api
+    env: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: bash backend/start.sh
+    envVars:
+      - key: DATABASE_URL
