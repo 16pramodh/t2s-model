@@ -3,17 +3,19 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
-from transformers import pipeline
+import requests
 
 # Load environment variables
 load_dotenv()
 db_url = os.getenv("DATABASE_URL")
+hf_token = os.getenv("HF_TOKEN")  # Your Hugging Face API token
 
 # Create SQLAlchemy engine
 engine = create_engine(db_url)
 
-# Pre-load the model
-pipe = pipeline("text2text-generation", model="16pramodh/t2s_model", tokenizer="16pramodh/t2s_model")
+# Hugging Face API endpoint
+HF_API_URL = "https://api-inference.huggingface.co/models/16pramodh/t2s_model"
+HEADERS = {"Authorization": f"Bearer {hf_token}"}
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -110,7 +112,22 @@ table_contexts = {
 # Input schema
 class Item(BaseModel):
     query: str
-    tables: str = "all"  #default
+    tables: str = "all"
+
+# Function to query Hugging Face API
+def query_hf_model(prompt: str):
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "max_length": 256,
+            "num_beams": 5,
+            "early_stopping": True
+        }
+    }
+    response = requests.post(HF_API_URL, headers=HEADERS, json=payload)
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail=f"Hugging Face API error: {response.text}")
+    return response.json()[0]["generated_text"]
 
 # Prediction route
 @app.post("/predict")
@@ -118,16 +135,9 @@ def gen_sql(item: Item):
     context = table_contexts.get(item.tables, context_all)
     input_text = item.query + " [SEP] " + context
 
-    gen_kwargs = {
-        "max_length": 256,
-        "num_beams": 5,
-        "early_stopping": True
-    }
+    # Generate SQL via Hugging Face API
+    sql = query_hf_model(input_text)
 
-    # Generate SQL query
-    sql = pipe(input_text, **gen_kwargs)[0]["generated_text"]
-
-    # Allow only SELECT queries
     if not sql.strip().lower().startswith("select"):
         raise HTTPException(status_code=400, detail="Only SELECT statements are allowed.")
 
