@@ -118,7 +118,7 @@ def query_hf_model(prompt: str):
     response = requests.post(HF_SPACE_URL, json=payload)
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail=f"Hugging Face API error: {response.text}")
-    return response.json()[0]["generated_text"]
+    return response.json()["sql"]
 
 # Prediction route
 @app.post("/predict")
