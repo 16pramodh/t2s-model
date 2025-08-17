@@ -8,14 +8,10 @@ import requests
 # Load environment variables
 load_dotenv()
 db_url = os.getenv("DATABASE_URL")
-hf_token = os.getenv("HF_TOKEN")  # Your Hugging Face API token
+HF_SPACE_URL = os.getenv("HF_SPACE_URL")
 
 # Create SQLAlchemy engine
 engine = create_engine(db_url)
-
-# Hugging Face API endpoint
-HF_API_URL = "https://api-inference.huggingface.co/models/16pramodh/t2s_model"
-HEADERS = {"Authorization": f"Bearer {hf_token}"}
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -117,14 +113,9 @@ class Item(BaseModel):
 # Function to query Hugging Face API
 def query_hf_model(prompt: str):
     payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_length": 256,
-            "num_beams": 5,
-            "early_stopping": True
+        "text": prompt
         }
-    }
-    response = requests.post(HF_API_URL, headers=HEADERS, json=payload)
+    response = requests.post(HF_SPACE_URL, json=payload)
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail=f"Hugging Face API error: {response.text}")
     return response.json()[0]["generated_text"]
