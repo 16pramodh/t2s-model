@@ -135,8 +135,9 @@ def gen_sql(item: Item):
     try:
         with engine.connect() as conn:
             result = conn.execute(text(sql))
-            rows = [dict(row) for row in result]
+            rows = result.mappings().all()  # ✅ safe for JSON serialization
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     return {"query": sql, "results": rows}
+
