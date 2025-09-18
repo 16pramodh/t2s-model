@@ -16,6 +16,19 @@ engine = create_engine(db_url)
 # Initialize FastAPI app
 app = FastAPI()
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://localhost:3000"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Context definitions
 context1 = '''CREATE TABLE employees (
     emp_id INT PRIMARY KEY,
