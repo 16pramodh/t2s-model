@@ -22,6 +22,7 @@ CREATE TABLE table1 (
     ...
     varN type
 );
+```
 
 Links
 
