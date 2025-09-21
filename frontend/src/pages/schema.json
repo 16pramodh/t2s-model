@@ -1,0 +1,18 @@
+{
+  "departments": [
+    { "Field": "dept_id", "Type": "INT", "Null": "NO", "Key": "PRI" },
+    { "Field": "dept_name", "Type": "VARCHAR(100)", "Null": "YES", "Key": "" }
+  ],
+  "managers": [
+    { "Field": "manager_id", "Type": "INT", "Null": "NO", "Key": "PRI", "ForeignKey": "" },
+    { "Field": "name", "Type": "VARCHAR(100)", "Null": "YES", "Key": "", "ForeignKey": "" },
+    { "Field": "dept_id", "Type": "INT", "Null": "YES", "Key": "MUL", "ForeignKey": "departments(dept_id)" }
+  ],
+  "employees": [
+    { "Field": "emp_id", "Type": "INT", "Null": "NO", "Key": "PRI", "ForeignKey": "" },
+    { "Field": "name", "Type": "VARCHAR(100)", "Null": "YES", "Key": "", "ForeignKey": "" },
+    { "Field": "dept_id", "Type": "INT", "Null": "YES", "Key": "MUL", "ForeignKey": "departments(dept_id)" },
+    { "Field": "manager_id", "Type": "INT", "Null": "YES", "Key": "MUL", "ForeignKey": "managers(manager_id)" },
+    { "Field": "salary", "Type": "DECIMAL(10,2)", "Null": "YES", "Key": "", "ForeignKey": "" }
+  ]
+}
