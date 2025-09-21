@@ -10,7 +10,7 @@ const api = process.env.REACT_APP_API_URL;
 const Main = () => {
 
     const [query, setQuery] = useState("")
-    const [table, setTable] = useState("")
+    const [table, setTable] = useState("1")
     const [result,setResult] = useState(null)
     const [loading,setLoading] = useState(false)
 
